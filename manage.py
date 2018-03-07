@@ -11,6 +11,13 @@ manager = Manager(app)
 def get_image_url():
     return 'http://images.nowcoder.com/head/' + str(random.randint(0, 1000)) + 'm.png'
 
+@manager.command
+def add_user():
+    user=User.query.get(100)
+    for i in range(0,5):
+        db.session.add(Image(get_image_url(),user.id))
+    db.session.commit()
+
 
 @manager.command
 def init_database():

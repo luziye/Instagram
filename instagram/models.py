@@ -22,12 +22,13 @@ class User(db.Model):
     def __repr__(self):
         return '<User %d %s>' % (self.id, self.username)
 
+    @property
     def is_authenticated(self):
         return True
-
+    @property
     def is_active(self):
         return True
-
+    @property
     def is_anonymous(self):
         return False
 
