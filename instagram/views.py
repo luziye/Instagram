@@ -114,7 +114,7 @@ def save_to_local(file,file_name):
 
 @app.route('/image/<image_name>/')
 def view_image(image_name):
-    return send_from_dire ctory(app.config['UPLOAD_DIR'],image_name)
+    return send_from_directory(app.config['UPLOAD_DIR'],image_name)
 
 
 @app.route('/upload', methods={'post'})
