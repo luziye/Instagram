@@ -2,8 +2,8 @@
 
 from instagram import app, db
 from models import User, Image, Comment
-from flask import render_template, redirect, request, get_flashed_messages, flash
-import random, hashlib, json
+from flask import render_template, redirect, request, get_flashed_messages, flash,send_from_directory
+import random, hashlib, json,uuid,os
 from flask_login import login_user, logout_user, current_user, login_required
 
 
@@ -28,7 +28,7 @@ def profile(user_id):
     if user == None:
         return render_template('/')
     paginate = Image.query.filter_by(user_id=user_id).paginate(page=1, per_page=3, error_out=False)
-    return render_template('profile.html', user=user, images=paginate.items,has_next=paginate.has_next)
+    return render_template('profile.html', user=user, images=paginate.items, has_next=paginate.has_next)
 
 
 @app.route('/profile/images/<int:user_id>/<int:page>/<int:per_page>/')
@@ -106,3 +106,32 @@ def login():
 def logout():
     logout_user()
     return redirect('/')
+
+def save_to_local(file,file_name):
+    save_dir=app.config['UPLOAD_DIR']
+    file.save(os.path.join(save_dir,file_name))
+    return '/image/'+file_name
+
+@app.route('/image/<image_name>/')
+def view_image(image_name):
+    return send_from_dire ctory(app.config['UPLOAD_DIR'],image_name)
+
+
+@app.route('/upload', methods={'post'})
+def upload():
+    # print request.files
+    file = request.files['file']
+    # print dir(file)
+    file_ext = ''
+    if file.filename.find('.') > 0:
+        file_ext = file.filename.rsplit('.', 1)[1].strip().lower()
+    if file_ext in app.config['ALLOWED_EXTA']:
+        #上传保存的文件名，随机生成
+        file_name=str(uuid.uuid1()).replace('-','')+'.'+file_ext
+        #保存图片文件
+        url=save_to_local(file,file_name)
+        if url!=None:
+            db.session.add(Image(url,current_user.id))
+            db.session.commit()
+
+    return redirect('/profile/%d' % current_user.id)
