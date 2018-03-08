@@ -30,7 +30,7 @@ class User(db.Model):
         return True
     @property
     def is_anonymous(self):
-        return False
+        return True
 
     def get_id(self):
         return self.id
