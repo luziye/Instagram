@@ -3,13 +3,20 @@ from instagram import app, db
 from flask_script import Manager
 from instagram.models import User, Image, Comment
 from sqlalchemy import and_, or_
-import random
+import random,unittest
 
 manager = Manager(app)
 
 
 def get_image_url():
     return 'http://images.nowcoder.com/head/' + str(random.randint(0, 1000)) + 'm.png'
+
+@manager.command
+def run_test():
+    tests=unittest.TestLoader().discover('./')
+    unittest.TextTestRunner().run(tests)
+    pass
+
 
 @manager.command
 def add_user():
